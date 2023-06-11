@@ -7,8 +7,15 @@ if (!defined("ABSPATH")) {
     exit();
 }
 
+require_once ELEMENTOR_ADDON_PLUGIN_PATH . "/includes/traits/Units.php";
+
 class CountDown extends \Elementor\Widget_Base
 {
+    /**
+     * @since 0.0.1
+     */
+    use Units;
+
     public function get_name()
     {
         return "count_down";
@@ -29,15 +36,12 @@ class CountDown extends \Elementor\Widget_Base
 
     public function get_categories()
     {
-        return [
-            "general",
-            \Elementor_Addon\Plugin::PLUGIN_WIDGETS_CATEGORY_SLUG,
-        ];
+        return [\Elementor_Addon\Plugin::PLUGIN_CATEGORY];
     }
 
     public function get_keywords()
     {
-        return ["count", "down"];
+        return ["count", "down", "timer", \Elementor_Addon\Plugin::PLUGIN_NAME];
     }
 
     public function get_script_depends()
@@ -56,153 +60,85 @@ class CountDown extends \Elementor\Widget_Base
 
     protected function register_controls()
     {
-        // ------- Title -------
-        $this->start_controls_section("section_title", [
-            "label" => esc_html__(
-                "Title",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "tab" => \Elementor\Controls_Manager::TAB_CONTENT,
-        ]);
-
-        $this->add_control("title", [
-            "type" => \Elementor\Controls_Manager::TEXT,
-            "label" => esc_html__(
-                "Title",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "default" => "Time Left",
-        ]);
-
-        $this->add_control("alignment", [
-            "type" => \Elementor\Controls_Manager::CHOOSE,
-            "label" => esc_html__(
-                "Alignment",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "options" => [
-                "has-text-align-left" => [
-                    "title" => esc_html__(
-                        "Left",
-                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-                    ),
-                    "icon" => "eicon-text-align-left",
-                ],
-                "has-text-align-center" => [
-                    "title" => esc_html__(
-                        "Center",
-                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-                    ),
-                    "icon" => "eicon-text-align-center",
-                ],
-                "has-text-align-right" => [
-                    "title" => esc_html__(
-                        "Right",
-                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-                    ),
-                    "icon" => "eicon-text-align-right",
-                ],
-            ],
-            "default" => "center",
-        ]);
-
-        $this->add_control("size", [
-            "type" => \Elementor\Controls_Manager::NUMBER,
-            "label" => esc_html__(
-                "Size",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "placeholder" => "0",
-            "min" => 0,
-            "max" => 100,
-            "step" => 1,
-            "default" => 50,
-        ]);
-
-        $this->end_controls_section();
-
-        // -------- Set Time -----
+        // -------- Count Down -----
         $this->start_controls_section("section_content", [
             "label" => esc_html__(
-                "Time",
+                "Count Down",
                 \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
             ),
             "tab" => \Elementor\Controls_Manager::TAB_CONTENT,
         ]);
 
-        $this->add_control("seconds", [
-            "type" => \Elementor\Controls_Manager::NUMBER,
+        $this->add_control("due_date", [
+            "type" => \Elementor\Controls_Manager::DATE_TIME,
             "label" => esc_html__(
-                "Seconds",
+                "Due Date & Time",
                 \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
             ),
-            "min" => 0,
-            "max" => 60,
-            "step" => 1,
-            "default" => 10,
+            "picker_options" => [
+                "enableTime:true",
+                "minuteIncrement:1",
+                "enableSeconds:true",
+                "time_24hr:true",
+                "monthSelectorType:'dropdown'",
+            ],
         ]);
 
-        $this->add_control("minutes", [
-            "type" => \Elementor\Controls_Manager::NUMBER,
+        $this->add_control("days_title", [
+            "type" => \Elementor\Controls_Manager::TEXT,
             "label" => esc_html__(
-                "Minutes",
+                "Days Title",
                 \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
             ),
-            "min" => 0,
-            "max" => 60,
-            "step" => 1,
-            "default" => 0,
-        ]);
-
-        $this->add_control("hours", [
-            "type" => \Elementor\Controls_Manager::NUMBER,
-            "label" => esc_html__(
-                "Hours",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "min" => 0,
-            "max" => 24,
-            "step" => 1,
-            "default" => 0,
-        ]);
-
-        $this->add_control("days", [
-            "type" => \Elementor\Controls_Manager::NUMBER,
-            "label" => esc_html__(
+            "placeholder" => esc_html__(
                 "Days",
                 \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
             ),
-            "min" => 0,
-            "step" => 1,
-            "default" => 0,
+            "default" => "Days",
+        ]);
+
+        $this->add_control("hours_title", [
+            "type" => \Elementor\Controls_Manager::TEXT,
+            "label" => esc_html__(
+                "Hours Title",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "placeholder" => esc_html__(
+                "Hours",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "default" => "Hours",
+        ]);
+
+        $this->add_control("minutes_title", [
+            "type" => \Elementor\Controls_Manager::TEXT,
+            "label" => esc_html__(
+                "Minutes Title",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "placeholder" => esc_html__(
+                "Minutes",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "default" => "Minutes",
+        ]);
+
+        $this->add_control("seconds_title", [
+            "type" => \Elementor\Controls_Manager::TEXT,
+            "label" => esc_html__(
+                "Seconds Title",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "placeholder" => esc_html__(
+                "Seconds",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "default" => "Seconds",
         ]);
 
         $this->end_controls_section();
 
         // ------- STYLE SECTION -------
-
-        // Title
-        $this->start_controls_section("section_title_style", [
-            "label" => esc_html__(
-                "Title",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "tab" => \Elementor\Controls_Manager::TAB_STYLE,
-        ]);
-
-        $this->add_control("title-color", [
-            "type" => \Elementor\Controls_Manager::COLOR,
-            "label" => esc_html__(
-                "Title Color",
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
-            ),
-            "default" => "#000",
-            "selectors" => [
-                "{{WRAPPER}} div header h5" => "color: {{value}}",
-            ],
-        ]);
-
-        $this->end_controls_section();
 
         // Counter
         $this->start_controls_section("section_counter", [
@@ -213,10 +149,10 @@ class CountDown extends \Elementor\Widget_Base
             "tab" => \Elementor\Controls_Manager::TAB_STYLE,
         ]);
 
-        $this->add_control("numbers-color", [
+        $this->add_control("counter-color", [
             "type" => \Elementor\Controls_Manager::COLOR,
             "label" => esc_html__(
-                "Number Color",
+                "Counter Color",
                 \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
             ),
             "default" => "#000",
@@ -225,7 +161,7 @@ class CountDown extends \Elementor\Widget_Base
             ],
         ]);
 
-        $this->add_control("numbers-title-color", [
+        $this->add_control("counter-title-color", [
             "type" => \Elementor\Controls_Manager::COLOR,
             "label" => esc_html__(
                 "Title Color",
@@ -237,6 +173,110 @@ class CountDown extends \Elementor\Widget_Base
             ],
         ]);
 
+        // Counter font size
+        $this->add_control("counter-font-size", [
+            "type" => \Elementor\Controls_Manager::SLIDER,
+            "label" => esc_html__(
+                "Counter Font Size",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "size_units" => self::get_units(),
+            "range" => self::get_ranges(),
+            "default" => [
+                "size" => 3,
+                "unit" => "rem",
+            ],
+            "selectors" => [
+                "{{WRAPPER}} div div span" => "font-size: {{size}}{{unit}}",
+            ],
+        ]);
+
+        // Title font size
+        $this->add_control("counter-title-font-size", [
+            "type" => \Elementor\Controls_Manager::SLIDER,
+            "label" => esc_html__(
+                "Title Font Size",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "size_units" => self::get_units(),
+            "range" => self::get_ranges(),
+            "default" => [
+                "size" => 1,
+                "unit" => "rem",
+            ],
+            "selectors" => [
+                "{{WRAPPER}} div div h6" => "font-size: {{size}}{{unit}}",
+            ],
+        ]);
+
+        // Gap
+        $this->add_control("counter-gap", [
+            "type" => \Elementor\Controls_Manager::SLIDER,
+            "label" => esc_html__(
+                "Gap",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "size_units" => self::get_units(),
+            "range" => self::get_ranges(),
+            "default" => [
+                "size" => 3,
+                "unit" => "rem",
+            ],
+            "selectors" => [
+                "{{WRAPPER}} div" => "gap: {{size}}{{unit}}",
+            ],
+        ]);
+
+        // Position
+        $this->add_control("counter-position", [
+            "type" => \Elementor\Controls_Manager::CHOOSE,
+            "label" => esc_html__(
+                "Position items",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+            ),
+            "options" => [
+                "left" => [
+                    "title" => esc_html__(
+                        "Left",
+                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+                    ),
+                    "icon" => "eicon-text-align-left",
+                ],
+                "center" => [
+                    "title" => esc_html__(
+                        "Center",
+                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+                    ),
+                    "icon" => "eicon-text-align-center",
+                ],
+                "right" => [
+                    "title" => esc_html__(
+                        "Right",
+                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+                    ),
+                    "icon" => "eicon-text-align-right",
+                ],
+                "space-evenly" => [
+                    "title" => esc_html__(
+                        "Evenly",
+                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+                    ),
+                    "icon" => "eicon-text-align-between",
+                ],
+                "space-between" => [
+                    "title" => esc_html__(
+                        "Space Between",
+                        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
+                    ),
+                    "icon" => "eicon-text-align-justify",
+                ],
+            ],
+            "default" => "space-between",
+            "selectors" => [
+                "{{WRAPPER}} div" => "justify-content: {{value}}",
+            ],
+        ]);
+
         $this->end_controls_section();
     }
 
@@ -244,9 +284,56 @@ class CountDown extends \Elementor\Widget_Base
     {
         $settings = $this->get_settings_for_display();
 
+        $due_date_in_days = 0;
+        $due_date_in_hours = 0;
+        $due_date_in_minutes = 0;
+        $due_date_in_seconds = 0;
+
+        /**
+         * Get total seconds
+         * subtract past time from in
+         * get Future time only
+         *
+         * @since 0.0.1
+         */
+        $due_date = strtotime($this->get_settings("due_date")) - time();
+        if (0 < $due_date) {
+            $due_date_in_days = intval($due_date / DAY_IN_SECONDS);
+            // Subtract days from total time
+            $due_date = $due_date - DAY_IN_SECONDS * $due_date_in_days;
+
+            $due_date_in_hours = intval($due_date / HOUR_IN_SECONDS);
+            // Subtract hours from total time
+            $due_date = $due_date - HOUR_IN_SECONDS * $due_date_in_hours;
+
+            $due_date_in_minutes = intval($due_date / MINUTE_IN_SECONDS);
+            // Subtract minutes from total time
+            $due_date = $due_date - MINUTE_IN_SECONDS * $due_date_in_minutes;
+
+            $due_date_in_seconds = $due_date;
+        }
+
+        /**
+         * Numbers should be at least 2 digit
+         * if not add 0 ahead
+         */
+        if ($due_date_in_days < 10) {
+            $due_date_in_days = "0$due_date_in_days";
+        }
+        if ($due_date_in_hours < 10) {
+            $due_date_in_hours = "0$due_date_in_hours";
+        }
+        if ($due_date_in_minutes < 10) {
+            $due_date_in_minutes = "0$due_date_in_minutes";
+        }
+        if ($due_date_in_seconds < 10) {
+            $due_date_in_seconds = "0$due_date_in_seconds";
+        }
+
         $data = [
             "class" => [
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "-count-down",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "--count-down",
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "--flex",
                 isset($settings["custom_class"])
                     ? $settings["custom_class"]
                     : "",
@@ -262,77 +349,37 @@ class CountDown extends \Elementor\Widget_Base
         }
 
         $this->add_render_attribute("wrapper", $data);
-        // Add Inline editing
-        $this->add_inline_editing_attributes("title", "basic");
         ?>
             <div <?php echo $this->get_render_attribute_string("wrapper"); ?>
             >
-                <header class="<?php echo $settings["alignment"]; ?>">
-                    <h5 <?php echo $this->get_render_attribute_string(
-                        "title"
-                    ); ?>>
-                        <?php echo $settings["title"]; ?>
-                    </h5>
-                </header>
-                <figure>
-                    <div class="days">
-                        <span ><?php echo $settings["days"]; ?></span>
-                        <h6>Days</h6>
+                    <div class="days <?php echo \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
+                        "--center"; ?>">
+                        <span ><?php echo $due_date_in_days; ?></span>
+                        <h6>
+                            <?php echo $settings["days_title"]; ?>
+                        </h6>
                     </div>
-                    <div class="hours">
-                        <span ><?php echo $settings["hours"]; ?></span>
-                        <h6>Hours</h6>
+                    <div class="hours <?php echo \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
+                        "--center"; ?>"">
+                        <span ><?php echo $due_date_in_hours; ?></span>
+                        <h6>
+                            <?php echo $settings["hours_title"]; ?>
+                        </h6>
                     </div>
-                    <div class="minutes">
-                        <span ><?php echo $settings["minutes"]; ?></span>
-                        <h6>Minutes</h6>
+                    <div class="minutes <?php echo \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
+                        "--center"; ?>"">
+                        <span ><?php echo $due_date_in_minutes; ?></span>
+                        <h6>
+                          <?php echo $settings["minutes_title"]; ?>
+                        </h6>
                     </div>
-                    <div class="seconds">
-                        <span ><?php echo $settings["seconds"]; ?></span>
-                        <h6>Seconds</h6>
+                    <div class="seconds <?php echo \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
+                        "--center"; ?>"">
+                        <span ><?php echo $due_date_in_seconds; ?></span>
+                        <h6>
+                            <?php echo $settings["seconds_title"]; ?>
+                        </h6>
                     </div>
-                </figure>
-            </div>
-        <?php
-    }
-
-    protected function content_template()
-    {
-        ?>
-        	<#
-                view.addRenderAttribute(
-                    'wrapper',
-                    {
-                        'class': [ '<?php echo \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
-                            "-count-down"; ?>', settings.custom_class, settings.class ],
-                        'role': settings.role,
-                        'aria-label': settings.name,
-                    }
-                );
-                view.addInlineEditingAttributes( 'title', 'basic' ); 
-            #>
-            <div {{{ view.getRenderAttributeString( 'wrapper' ) }}}>
-                <header class="{{ settings.alignment }}">
-                    <h5 {{{ view.getRenderAttributeString( 'title' ) }}} >{{ settings.title }}</h5>
-                </header>
-                <figure>
-                    <div class="days">
-                        <span>{{ settings.days }}</span>
-                        <h6>Days</h6>
-                    </div>
-                    <div class="hours">
-                        <span >{{ settings.hours }}</span>
-                        <h6>Hours</h6>
-                    </div>
-                    <div class="minutes">
-                        <span>{{ settings.minutes }}</span>
-                        <h6>Minutes</h6>
-                    </div>
-                    <div class="seconds">
-                        <span>{{ settings.seconds }}</span>
-                        <h6>Seconds</h6>
-                    </div>
-                 </figure>
             </div>
         <?php
     }

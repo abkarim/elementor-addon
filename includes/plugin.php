@@ -19,24 +19,7 @@ final class Plugin
      * @since 0.0.1
      * @var string The addon version.
      */
-    // const PLUGIN_VERSION = "0.0.1";
     const PLUGIN_VERSION = false;
-
-    /**
-     * Addon path
-     *
-     * @since 0.0.1
-     * @var string The addon base path.
-     */
-    const PLUGIN_PATH = ELEMENTOR_ADDON_PLUGIN_PATH;
-
-    /**
-     * Addon url path
-     *
-     * @since 0.0.1
-     * @var string The addon base url.
-     */
-    const PLUGIN_URL = ELEMENTOR_ADDON_PLUGIN_URL;
 
     /**
      * Plugin Name
@@ -60,15 +43,7 @@ final class Plugin
      * @since 0.0.1
      * @var string widgets category name
      */
-    const PLUGIN_WIDGETS_CATEGORY_NAME = "Elementor Addon";
-
-    /**
-     * Plugin widgets category SLUG
-     *
-     * @since 0.0.1
-     * @var string widgets category name
-     */
-    const PLUGIN_WIDGETS_CATEGORY_SLUG = "elementor-addon";
+    const PLUGIN_CATEGORY = "elementor-addon-category";
 
     /**
      * Minimum Elementor Version
@@ -172,7 +147,7 @@ final class Plugin
             return false;
         }
 
-        // All Ok
+        //* All Ok
         return true;
     }
 
@@ -295,13 +270,13 @@ final class Plugin
         // Load Styles
         add_action("elementor/frontend/after_enqueue_styles", [
             $this,
-            "frontend_styles",
+            "load_styles",
         ]);
 
         // Load Scripts
         add_action("elementor/frontend/after_register_scripts", [
             $this,
-            "frontend_scripts",
+            "load_scripts",
         ]);
 
         // Add category
@@ -312,12 +287,16 @@ final class Plugin
 
         // Register widgets
         add_action("elementor/widgets/register", [$this, "register_widgets"]);
-
         // Unregister Widgets
         add_action("elementor/widgets/register", [$this, "unregister_widgets"]);
 
         // Register controls
         add_action("elementor/controls/register", [$this, "register_controls"]);
+        // Unregister controls
+        add_action("elementor/controls/register", [
+            $this,
+            "unregister_controls",
+        ]);
     }
 
     /**
@@ -326,23 +305,36 @@ final class Plugin
      * @since 0.0.1
      * @access public
      */
-    public function frontend_styles()
+    public function load_styles()
     {
+        /**
+         * Common styles
+         */
         wp_register_style(
-            self::PLUGIN_TEXT_DOMAIN . "-frontend-style",
-            self::PLUGIN_URL . "/assets/css/frontend-style.css",
+            self::PLUGIN_TEXT_DOMAIN . "-common",
+            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/common.css",
             [],
             self::PLUGIN_VERSION
         );
+        wp_enqueue_style(self::PLUGIN_TEXT_DOMAIN . "-common");
 
+        /**
+         * Frontend styles
+         */
+        wp_register_style(
+            self::PLUGIN_TEXT_DOMAIN . "-frontend",
+            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/frontend.css",
+            [self::PLUGIN_TEXT_DOMAIN . "-common"],
+            self::PLUGIN_VERSION
+        );
         wp_enqueue_style(self::PLUGIN_TEXT_DOMAIN . "-frontend-style");
 
         /**
          * Count Down widgets css
          */
         wp_register_style(
-            self::PLUGIN_TEXT_DOMAIN . "-count-down-style",
-            self::PLUGIN_URL . "/assets/css/count-down.css",
+            self::PLUGIN_TEXT_DOMAIN . "-count-down",
+            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/count-down.css",
             [self::PLUGIN_TEXT_DOMAIN . "-frontend-style"],
             self::PLUGIN_VERSION
         );
@@ -354,16 +346,18 @@ final class Plugin
      * @since 0.0.1
      * @access public
      */
-    public function frontend_scripts()
+    public function load_scripts()
     {
+        /**
+         * Frontend scripts
+         */
         wp_register_script(
             self::PLUGIN_TEXT_DOMAIN . "-frontend-script",
-            self::PLUGIN_URL . "/assets/js/frontend-script.js",
+            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/js/frontend-script.js",
             [],
             self::PLUGIN_VERSION,
             false
         );
-
         wp_enqueue_script(self::PLUGIN_TEXT_DOMAIN . "-frontend-script");
 
         /**
@@ -371,10 +365,10 @@ final class Plugin
          */
         wp_register_script(
             self::PLUGIN_TEXT_DOMAIN . "-count-down-script",
-            self::PLUGIN_URL . "/assets/js/count-down.js",
+            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/js/count-down.js",
             [self::PLUGIN_TEXT_DOMAIN . "-frontend-script"],
             self::PLUGIN_VERSION,
-            false
+            true
         );
     }
 
@@ -389,7 +383,8 @@ final class Plugin
      */
     public function register_widgets($widgets_manager)
     {
-        require_once self::PLUGIN_PATH . "/includes/widgets/CountDown.php";
+        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
+            "/includes/widgets/CountDown.php";
 
         $widgets_manager->register(new \CountDown());
     }
@@ -400,6 +395,7 @@ final class Plugin
      * Fired by `elementor/widgets/unregister` action hook.
      *
      * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
+     * @since 0.0.1
      */
     public function unregister_widgets($widgets_manager)
     {
@@ -414,12 +410,26 @@ final class Plugin
      * Fired by `elementor/controls/register` action hook.
      *
      * @param \Elementor\Controls_Manager $controls_manager Elementor controls manager.
+     * @since 0.0.1
      */
     public function register_controls($controls_manager)
     {
         // require_once __DIR__ . "/includes/controls/control-1.php";
 
         // $controls_manager->register(new \Control_2());
+    }
+
+    /**
+     * Unregister Controls
+     *
+     * Fired by `elementor/controls/register` action hook.
+     *
+     * @param \Elementor\Controls_Manager $controls_manager Elementor controls manager.
+     * @since 0.0.1
+     */
+    public function unregister_controls($controls_manager)
+    {
+        // $controls_manager->unregister("");
     }
 
     /**
@@ -431,11 +441,8 @@ final class Plugin
      */
     public function add_widgets_category($elements_manager)
     {
-        $elements_manager->add_category(self::PLUGIN_WIDGETS_CATEGORY_SLUG, [
-            "title" => esc_html__(
-                self::PLUGIN_WIDGETS_CATEGORY_NAME,
-                self::PLUGIN_TEXT_DOMAIN
-            ),
+        $elements_manager->add_category(self::PLUGIN_CATEGORY, [
+            "title" => \esc_html__(self::PLUGIN_NAME, self::PLUGIN_TEXT_DOMAIN),
             "icon" => "fa fa-plug",
         ]);
     }

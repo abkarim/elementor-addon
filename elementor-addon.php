@@ -21,7 +21,7 @@ if (!defined("ABSPATH")) {
 /**
  * Checks if the function already exists or not
  *
- * Don't break site if some other plugin or theme
+ * Doesn't break site if some other plugin or theme
  * is already using this function name
  *
  */
