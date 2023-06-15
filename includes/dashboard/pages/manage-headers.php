@@ -22,7 +22,13 @@ if (!current_user_can("manage_options")) {
 <hr>
 
 <?php
-require_once ELEMENTOR_ADDON_PLUGIN_PATH . "/includes/classes/ListTable.php";
+require_once ELEMENTOR_ADDON_PLUGIN_PATH .
+    "/includes/classes/HeaderListTable.php";
 
-$headers_list = new \Elementor_Addon\List_Table();
-
+$table = new \Elementor_Addon\Header_List_Table();
+?>
+  <div class="wrap">
+      <div id="icon-users" class="icon32"></div>
+      <h2>Headers</h2>
+      <?php $table->display(); ?>
+  </div>

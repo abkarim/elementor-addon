@@ -309,64 +309,16 @@ final class Plugin
      */
     private function init()
     {
-        // Add menu
-        add_action("admin_menu", [$this, "add_admin_menu"]);
-
         // Load styles
         add_action("admin_enqueue_scripts", [$this, "load_admin_styles"], 100);
 
         // Load styles
         add_action("admin_enqueue_scripts", [$this, "load_admin_scripts"]);
 
-        // Add header in frontend
-        add_action("wp_body_open", [$this, "add_header_in_frontend"]);
-    }
-
-    /**
-     * Add admin menu
-     *
-     * Adds menu and page tp wordpress admin dashboard
-     *
-     * @since 0.0.1
-     */
-    public function add_admin_menu()
-    {
-        // Add Headers page
-        add_submenu_page(
-            "themes.php",
-            "Manage headers",
-            \Elementor_Addon\Plugin::PLUGIN_NAME . " headers",
-            "manage_options",
-            ELEMENTOR_ADDON_PLUGIN_PATH .
-                "/includes/dashboard/pages/manage-headers.php",
-            null
-        );
-    }
-
-    /**
-     * Add header
-     *
-     * Loads a post as a header in site
-     *
-     * @since 0.0.1
-     */
-    public function add_header_in_frontend()
-    {
-        /**
-         * Check if a header exists and activated
-         */
-        $post_id = 2085;
-
-        \Elementor\Plugin::$instance->frontend->enqueue_styles();
-        \Elementor\Plugin::$instance->frontend->enqueue_scripts();
-
-        $css_file = new \Elementor\Core\Files\CSS\Post($post_id);
-        $css_file->enqueue();
-
-        echo \Elementor\Plugin::instance()->frontend->get_builder_content_for_display(
-            $post_id,
-            true
-        );
+        // Load class
+        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
+            "/includes/classes/Header_Footer.php";
+        new \Elementor_Addon\Header_And_Footer();
     }
 
     /**
