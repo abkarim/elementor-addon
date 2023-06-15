@@ -1,7 +1,17 @@
+/** 
+* Display rules
+*/
+.elementor-addon--inline-block {
+    display: inline-block;
+}
+
 .elementor-addon--flex {
     display: flex;
 }
 
+/**
+* Alignment 
+*/
 .elementor-addon--center {
     text-align: center;
 }
