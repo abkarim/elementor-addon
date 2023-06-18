@@ -328,10 +328,43 @@ final class Plugin
         // Load styles
         add_action("admin_enqueue_scripts", [$this, "load_admin_scripts"]);
 
+        // Add menu
+        add_action("admin_menu", [$this, "add_admin_menu"]);
+
         // Load class
         require_once ELEMENTOR_ADDON_PLUGIN_PATH .
-            "/includes/classes/Header_Footer.php";
+            "includes/classes/Header_Footer.php";
         new \Elementor_Addon\Header_And_Footer();
+    }
+
+    /**
+     * Add admin menu
+     *
+     * Adds menu and page tp wordpress admin dashboard
+     *
+     * @since 0.0.1
+     */
+    public function add_admin_menu()
+    {
+        add_menu_page(
+            self::PLUGIN_NAME,
+            self::PLUGIN_NAME,
+            "manage_options",
+            self::PLUGIN_TEXT_DOMAIN,
+            [$this, "render_index_views"],
+            null,
+            60
+        );
+    }
+
+    /**
+     * Render index views
+     *
+     * @since 0.0.1
+     */
+    public function render_index_views()
+    {
+        require_once ELEMENTOR_ADDON_PLUGIN_PATH . "includes/views/index.php";
     }
 
     /**

@@ -31,9 +31,6 @@ class Header_And_Footer
      */
     public function init()
     {
-        // Add menu
-        add_action("admin_menu", [$this, "add_admin_menu"]);
-
         add_action("init", [$this, "create_custom_post_type"]);
 
         // Add template for custom post type
@@ -46,10 +43,7 @@ class Header_And_Footer
         /**
          * Add header in frontend
          */
-        if (
-            $this->is_header_exists_and_enabled() &&
-            $this->should_header_render()
-        ) {
+        if ($this->is_header_exists_and_enabled()) {
             add_action("wp_body_open", [$this, "show_header"]);
         }
     }
@@ -60,14 +54,17 @@ class Header_And_Footer
     public function create_custom_post_type()
     {
         $labels = [
-            "name" => "Elementor addon", // Plural name for the post type
-            "singular_name" => "Elementor Addon", // Singular name for the post type
+            "name" => " headers", // Plural name for the post type
+            "singular_name" => " header", // Singular name for the post type
         ];
 
         $args = [
             "labels" => $labels,
             "public" => true,
             "has_archive" => false,
+            "exclude_from_search" => true,
+            "show_ui" => true,
+            "show_in_menu" => \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN,
         ];
 
         register_post_type(self::CUSTOM_POST_TYPE, $args);
@@ -112,6 +109,12 @@ class Header_And_Footer
      */
     public function should_header_render()
     {
+        /**
+         * Don't print header when previewing or editing
+         */
+        if (is_singular(self::CUSTOM_POST_TYPE)) {
+            return false;
+        }
         return true;
     }
 
@@ -123,30 +126,9 @@ class Header_And_Footer
      */
     public function get_header_id()
     {
-        $id = 2124;
+        $id = 2141;
 
         return $id;
-    }
-
-    /**
-     * Add admin menu
-     *
-     * Adds menu and page tp wordpress admin dashboard
-     *
-     * @since 0.0.1
-     */
-    public function add_admin_menu()
-    {
-        // Add Headers page
-        add_submenu_page(
-            "themes.php",
-            "Manage headers",
-            \Elementor_Addon\Plugin::PLUGIN_NAME . " headers",
-            "manage_options",
-            ELEMENTOR_ADDON_PLUGIN_PATH .
-                "/includes/dashboard/pages/manage-headers.php",
-            null
-        );
     }
 
     /**
@@ -172,6 +154,10 @@ class Header_And_Footer
      */
     public function show_header()
     {
+        if ($this->should_header_render() === false) {
+            return;
+        }
+
         $id = $this->get_header_id();
 
         $this->load_assets($id);
