@@ -270,6 +270,19 @@ final class Plugin
      */
     public function elementor_init()
     {
+        add_action(
+            "elementor/element/" .
+                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
+                "-post" .
+                "/after_section_end",
+            function ($post_id) {
+                \Elementor\Plugin::$instance->documents->switch_editor_type(
+                    $post_id,
+                    "builder"
+                );
+            }
+        );
+
         // Load Styles
         add_action("elementor/frontend/after_enqueue_styles", [
             $this,

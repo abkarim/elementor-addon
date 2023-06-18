@@ -11,6 +11,9 @@ if (!defined("ABSPATH")) {
 
 class Header_And_Footer
 {
+    const CUSTOM_POST_TYPE =
+        \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "-post";
+
     /**
      * Constructor function
      *
@@ -31,6 +34,15 @@ class Header_And_Footer
         // Add menu
         add_action("admin_menu", [$this, "add_admin_menu"]);
 
+        add_action("init", [$this, "create_custom_post_type"]);
+
+        // Add template for custom post type
+        add_filter(
+            "template_include",
+            [$this, "add_custom_post_template_support"],
+            99
+        );
+
         /**
          * Add header in frontend
          */
@@ -40,6 +52,43 @@ class Header_And_Footer
         ) {
             add_action("wp_body_open", [$this, "show_header"]);
         }
+    }
+
+    /**
+     *
+     */
+    public function create_custom_post_type()
+    {
+        $labels = [
+            "name" => "Elementor addon", // Plural name for the post type
+            "singular_name" => "Elementor Addon", // Singular name for the post type
+        ];
+
+        $args = [
+            "labels" => $labels,
+            "public" => true,
+            "has_archive" => false,
+        ];
+
+        register_post_type(self::CUSTOM_POST_TYPE, $args);
+
+        add_post_type_support(self::CUSTOM_POST_TYPE, "elementor");
+    }
+
+    /**
+     *
+     */
+    public function add_custom_post_template_support($template)
+    {
+        if (is_singular(self::CUSTOM_POST_TYPE)) {
+            $template_file =
+                ELEMENTOR_ADDON_PLUGIN_PATH .
+                "/includes/templates/custom-post-support.php";
+            if (file_exists($template_file)) {
+                return $template_file;
+            }
+        }
+        return $template;
     }
 
     /**
@@ -74,7 +123,7 @@ class Header_And_Footer
      */
     public function get_header_id()
     {
-        $id = 2085;
+        $id = 2124;
 
         return $id;
     }
