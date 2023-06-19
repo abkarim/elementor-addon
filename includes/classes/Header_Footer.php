@@ -54,8 +54,8 @@ class Header_And_Footer
     public function create_custom_post_type()
     {
         $labels = [
-            "name" => " headers", // Plural name for the post type
-            "singular_name" => " header", // Singular name for the post type
+            "name" => "headers", // Plural name for the post type
+            "singular_name" => "header", // Singular name for the post type
         ];
 
         $args = [
@@ -65,6 +65,7 @@ class Header_And_Footer
             "exclude_from_search" => true,
             "show_ui" => true,
             "show_in_menu" => \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN,
+            "supports" => ["title"],
         ];
 
         register_post_type(self::CUSTOM_POST_TYPE, $args);
@@ -96,7 +97,20 @@ class Header_And_Footer
      */
     public function is_header_exists_and_enabled()
     {
-        return true;
+        $args = [
+            "numberposts" => 1,
+            "post_type" => self::CUSTOM_POST_TYPE,
+            "order" => "DESC",
+            "orderby" => "id",
+        ];
+        $posts = get_posts($args);
+
+        if ($posts) {
+            $this->post_id = $posts[0]->ID;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -126,9 +140,7 @@ class Header_And_Footer
      */
     public function get_header_id()
     {
-        $id = 2141;
-
-        return $id;
+        return $this->post_id;
     }
 
     /**
