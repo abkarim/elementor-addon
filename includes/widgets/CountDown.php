@@ -31,7 +31,7 @@ class CountDown extends \Elementor\Widget_Base
 
     public function get_icon()
     {
-        return "eicon-code";
+        return "eicon-countdown";
     }
 
     public function get_categories()
@@ -48,13 +48,6 @@ class CountDown extends \Elementor\Widget_Base
     {
         return [
             \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "-count-down-script",
-        ];
-    }
-
-    public function get_style_depends()
-    {
-        return [
-            \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "-count-down-style",
         ];
     }
 

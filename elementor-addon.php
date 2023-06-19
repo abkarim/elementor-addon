@@ -7,7 +7,7 @@
  * Author URI:
  * Text Domain: elementor-addon
  *
- * Elementor tested up to: x.x.x
+ * Elementor tested up to: 3.14.0
  * Elementor Pro tested up to: x.x.x
  */
 

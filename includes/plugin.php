@@ -415,6 +415,15 @@ final class Plugin
             self::PLUGIN_VERSION
         );
         wp_enqueue_style(self::PLUGIN_TEXT_DOMAIN . "-common");
+
+        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
+            wp_register_style(
+                self::PLUGIN_TEXT_DOMAIN . "-mega-menu",
+                ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/mega-menu.css",
+                [self::PLUGIN_TEXT_DOMAIN . "-common"],
+                self::PLUGIN_VERSION
+            );
+        }
     }
 
     /**
@@ -447,6 +456,16 @@ final class Plugin
             self::PLUGIN_VERSION,
             true
         );
+
+        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
+            wp_register_script(
+                self::PLUGIN_TEXT_DOMAIN . "-mega-menu",
+                ELEMENTOR_ADDON_PLUGIN_URL . "/assets/js/mega-menu.js",
+                [self::PLUGIN_TEXT_DOMAIN . "-frontend-script"],
+                self::PLUGIN_VERSION,
+                true
+            );
+        }
     }
 
     /**
@@ -472,8 +491,22 @@ final class Plugin
     {
         require_once ELEMENTOR_ADDON_PLUGIN_PATH .
             "/includes/widgets/CountDown.php";
+        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
+            "/includes/widgets/MegaMenu.php";
+        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
+            "/includes/widgets/SiteLogo.php";
 
         $widgets_manager->register(new \CountDown());
+        $widgets_manager->register(new \SiteLogo());
+
+        /**
+         * Add Header and footer widgets on only custom post
+         *
+         * @since 0.0.1
+         */
+        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
+            $widgets_manager->register(new \MegaMenu());
+        }
     }
 
     /**
