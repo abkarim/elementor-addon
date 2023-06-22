@@ -91,11 +91,8 @@ final class Plugin
     public function __construct()
     {
         if ($this->is_compatible()) {
-            // Init plugin
-            $this->init();
-
             // After elementor load this hook will be fired
-            add_action("elementor/init", [$this, "elementor_init"]);
+            add_action("elementor/init", [$this, "init"]);
         }
     }
 
@@ -268,21 +265,8 @@ final class Plugin
      * @since 0.0.1
      * @access public
      */
-    public function elementor_init()
+    public function init()
     {
-        add_action(
-            "elementor/element/" .
-                \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN .
-                "-post" .
-                "/after_section_end",
-            function ($post_id) {
-                \Elementor\Plugin::$instance->documents->switch_editor_type(
-                    $post_id,
-                    "builder"
-                );
-            }
-        );
-
         // Load Styles
         add_action("elementor/frontend/after_enqueue_styles", [
             $this,
@@ -313,58 +297,6 @@ final class Plugin
             $this,
             "unregister_controls",
         ]);
-    }
-
-    /**
-     * Init plugin
-     *
-     * @since 0.0.1
-     */
-    private function init()
-    {
-        // Load styles
-        add_action("admin_enqueue_scripts", [$this, "load_admin_styles"], 100);
-
-        // Load styles
-        add_action("admin_enqueue_scripts", [$this, "load_admin_scripts"]);
-
-        // Add menu
-        add_action("admin_menu", [$this, "add_admin_menu"]);
-
-        // Load class
-        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
-            "includes/classes/Header_Footer.php";
-        new \Elementor_Addon\Header_And_Footer();
-    }
-
-    /**
-     * Add admin menu
-     *
-     * Adds menu and page tp wordpress admin dashboard
-     *
-     * @since 0.0.1
-     */
-    public function add_admin_menu()
-    {
-        add_menu_page(
-            self::PLUGIN_NAME,
-            self::PLUGIN_NAME,
-            "manage_options",
-            self::PLUGIN_TEXT_DOMAIN,
-            [$this, "render_index_views"],
-            null,
-            60
-        );
-    }
-
-    /**
-     * Render index views
-     *
-     * @since 0.0.1
-     */
-    public function render_index_views()
-    {
-        require_once ELEMENTOR_ADDON_PLUGIN_PATH . "includes/views/index.php";
     }
 
     /**
@@ -399,34 +331,6 @@ final class Plugin
     }
 
     /**
-     * Load admin styles
-     *
-     * @since 0.0.1
-     */
-    public function load_admin_styles()
-    {
-        /**
-         * Common styles
-         */
-        wp_register_style(
-            self::PLUGIN_TEXT_DOMAIN . "-common",
-            ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/common.css",
-            [],
-            self::PLUGIN_VERSION
-        );
-        wp_enqueue_style(self::PLUGIN_TEXT_DOMAIN . "-common");
-
-        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
-            wp_register_style(
-                self::PLUGIN_TEXT_DOMAIN . "-mega-menu",
-                ELEMENTOR_ADDON_PLUGIN_URL . "/assets/css/mega-menu.css",
-                [self::PLUGIN_TEXT_DOMAIN . "-common"],
-                self::PLUGIN_VERSION
-            );
-        }
-    }
-
-    /**
      * Add frontend scripts
      *
      * @since 0.0.1
@@ -456,26 +360,6 @@ final class Plugin
             self::PLUGIN_VERSION,
             true
         );
-
-        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
-            wp_register_script(
-                self::PLUGIN_TEXT_DOMAIN . "-mega-menu",
-                ELEMENTOR_ADDON_PLUGIN_URL . "/assets/js/mega-menu.js",
-                [self::PLUGIN_TEXT_DOMAIN . "-frontend-script"],
-                self::PLUGIN_VERSION,
-                true
-            );
-        }
-    }
-
-    /**
-     * Add admin scripts
-     *
-     * @since 0.0.1
-     * @access public
-     */
-    public function load_admin_scripts()
-    {
     }
 
     /**
@@ -491,22 +375,8 @@ final class Plugin
     {
         require_once ELEMENTOR_ADDON_PLUGIN_PATH .
             "/includes/widgets/CountDown.php";
-        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
-            "/includes/widgets/MegaMenu.php";
-        require_once ELEMENTOR_ADDON_PLUGIN_PATH .
-            "/includes/widgets/SiteLogo.php";
 
         $widgets_manager->register(new \CountDown());
-        $widgets_manager->register(new \SiteLogo());
-
-        /**
-         * Add Header and footer widgets on only custom post
-         *
-         * @since 0.0.1
-         */
-        if (is_singular(\Elementor_Addon\Header_And_Footer::CUSTOM_POST_TYPE)) {
-            $widgets_manager->register(new \MegaMenu());
-        }
     }
 
     /**

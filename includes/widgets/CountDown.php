@@ -51,6 +51,13 @@ class CountDown extends \Elementor\Widget_Base
         ];
     }
 
+    public function get_style_depends()
+    {
+        return [
+            \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN . "-count-down-style",
+        ];
+    }
+
     protected function register_controls()
     {
         // -------- Count Down -----
@@ -233,28 +240,28 @@ class CountDown extends \Elementor\Widget_Base
                         "Left",
                         \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
                     ),
-                    "icon" => "eicon-text-align-left",
+                    "icon" => "eicon-h-align-left",
                 ],
                 "center" => [
                     "title" => esc_html__(
                         "Center",
                         \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
                     ),
-                    "icon" => "eicon-text-align-center",
+                    "icon" => "eicon-h-align-center",
                 ],
                 "right" => [
                     "title" => esc_html__(
                         "Right",
                         \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
                     ),
-                    "icon" => "eicon-text-align-right",
+                    "icon" => "eicon-h-align-right",
                 ],
                 "space-evenly" => [
                     "title" => esc_html__(
                         "Evenly",
                         \Elementor_Addon\Plugin::PLUGIN_TEXT_DOMAIN
                     ),
-                    "icon" => "eicon-text-align-between",
+                    "icon" => "eicon-h-align-stretch",
                 ],
                 "space-between" => [
                     "title" => esc_html__(
