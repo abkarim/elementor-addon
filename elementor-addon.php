@@ -1,13 +1,14 @@
 <?php
 /**
  * Plugin Name: Elementor Addon
- * Description:
+ * Plugin URI:  https://github.com/abkarim/elementor-addon
+ * Description: Elementor addon
  * Version:     0.0.1
- * Author:
- * Author URI:
+ * Author: Karim
+ * Author URI: https://github.com/abkarim
  * Text Domain: elementor-addon
  *
- * Elementor tested up to: x.x.x
+ * Elementor tested up to: 3.14.0
  * Elementor Pro tested up to: x.x.x
  */
 
