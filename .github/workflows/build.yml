@@ -1,0 +1,23 @@
+name: Build
+on: [push]
+permissions:
+    contents: write
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout 🛎️
+              uses: actions/checkout@v3
+
+            - name: Remove unnesesary files 🛎
+              run: |
+                  pwd
+                  ls -la
+                  rm ./README.md ./package.json ./package-lock.json ./.gitignore ./.prettierrc.json ./.eslintrc.json
+                  rm -rf ./.github ./.vscode
+
+            - name: Push 🚀
+              uses: JamesIves/github-pages-deploy-action@v4
+              with:
+                  branch: plugin
+                  folder: . # The folder the action should deploy.
